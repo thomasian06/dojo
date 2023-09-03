@@ -1,0 +1,9 @@
+# Utilities
+abbr -U --quiet crc="code ~/.zshrc"
+
+# Git/Commitizen
+abbr -U --quiet czc="git add -u; cz c"
+
+# Pre-Commit
+abbr -U --quiet pcr="pre-commit run --all-files"
+abbr -U --quiet pcu="pre-commit autoupdate"
