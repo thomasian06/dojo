@@ -53,13 +53,23 @@ return require('lazy').setup({
         dependencies = { 'nvim-tree/nvim-web-devicons', lazy = true }
     },
 
+    ---------------------------------------------------------------------------
+    -- Dependency Manager
+    ---------------------------------------------------------------------------
+    {
+        'williamboman/mason.nvim',
+        opts = {
+            ensure_installed = {
+                "debugpy",
+            },
+        },
+    },
     {
         'VonHeikemen/lsp-zero.nvim',
         branch = 'v3.x',
         dependencies = {
             --- Uncomment the two plugins below if you want to manage the language servers from neovim
             --- and read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
-            { 'williamboman/mason.nvim' },
             { 'williamboman/mason-lspconfig.nvim' },
 
             -- LSP Support
@@ -88,11 +98,64 @@ return require('lazy').setup({
             "TmuxNavigatePrevious",
         },
         keys = {
-            { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-            { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-            { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-            { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+            { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+            { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+            { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+            { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
             { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
         },
+    },
+
+    ---------------------------------------------------------------------------
+    -- Debuggers
+    ---------------------------------------------------------------------------
+    {
+        "mfussenegger/nvim-dap",
+        keys = {
+            { "<leader>db", "<cmd> DapToggleBreakpoint <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>di", "<cmd> DapStepInto <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>do", "<cmd> DapStepOver <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>du", "<cmd> DapStepOut <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>dc", "<cmd> DapContinue <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>dt", "<cmd> DapTerminate <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>de", "<cmd> DapToggleRepl <CR>", desc = "Toggle Breakpoint" },
+        },
+    },
+
+    -- Debug UI
+    {
+        "rcarriga/nvim-dap-ui",
+        dependencies = "mfussenegger/nvim-dap",
+        config = function()
+            local dap = require("dap")
+            local dapui = require("dapui")
+            dapui.setup()
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open()
+            end
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close()
+            end
+        end
+    },
+
+    -- Python
+    {
+        "mfussenegger/nvim-dap-python",
+        ft = { "python" },
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "rcarriga/nvim-dap-ui",
+        },
+        keys = {
+            { "<leader>dr", function() require("dap-python").test_method() end, desc = "Run and debug." }
+        },
+        config = function(_, opts)
+            local path = "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
+            require("dap-python").setup(path)
+        end,
     }
 })
