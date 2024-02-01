@@ -53,6 +53,54 @@ return require('lazy').setup({
         dependencies = { 'nvim-tree/nvim-web-devicons', lazy = true }
     },
 
+    {
+        "christoomey/vim-tmux-navigator",
+        cmd = {
+            "TmuxNavigateLeft",
+            "TmuxNavigateDown",
+            "TmuxNavigateUp",
+            "TmuxNavigateRight",
+            "TmuxNavigatePrevious",
+        },
+        keys = {
+            { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+            { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+            { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+            { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
+            { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+        },
+    },
+
+    {
+        "kiyoon/treesitter-indent-object.nvim",
+        keys = {
+            {
+                "ai",
+                function() require 'treesitter_indent_object.textobj'.select_indent_outer() end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (outer)",
+            },
+            {
+                "aI",
+                function() require 'treesitter_indent_object.textobj'.select_indent_outer(true) end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (outer, line-wise)",
+            },
+            {
+                "ii",
+                function() require 'treesitter_indent_object.textobj'.select_indent_inner() end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (inner, partial range)",
+            },
+            {
+                "iI",
+                function() require 'treesitter_indent_object.textobj'.select_indent_inner(true, 'V') end,
+                mode = { "x", "o" },
+                desc = "Select context-aware indent (inner, entire range) in line-wise visual mode",
+            },
+        },
+    },
+
     ---------------------------------------------------------------------------
     -- Dependency Manager
     ---------------------------------------------------------------------------
@@ -64,6 +112,10 @@ return require('lazy').setup({
             },
         },
     },
+
+    ---------------------------------------------------------------------------
+    -- LSP
+    ---------------------------------------------------------------------------
     {
         'VonHeikemen/lsp-zero.nvim',
         branch = 'v3.x',
@@ -88,53 +140,6 @@ return require('lazy').setup({
         }
     },
 
-    {
-        "christoomey/vim-tmux-navigator",
-        cmd = {
-            "TmuxNavigateLeft",
-            "TmuxNavigateDown",
-            "TmuxNavigateUp",
-            "TmuxNavigateRight",
-            "TmuxNavigatePrevious",
-        },
-        keys = {
-            { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
-            { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
-            { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
-            { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
-            { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
-        },
-    },
-
-    {
-        "kiyoon/treesitter-indent-object.nvim",
-        keys = {
-            {
-                "ai",
-                function() require'treesitter_indent_object.textobj'.select_indent_outer() end,
-                mode = {"x", "o"},
-                desc = "Select context-aware indent (outer)",
-            },
-            {
-                "aI",
-                function() require'treesitter_indent_object.textobj'.select_indent_outer(true) end,
-                mode = {"x", "o"},
-                desc = "Select context-aware indent (outer, line-wise)",
-            },
-            {
-                "ii",
-                function() require'treesitter_indent_object.textobj'.select_indent_inner() end,
-                mode = {"x", "o"},
-                desc = "Select context-aware indent (inner, partial range)",
-            },
-            {
-                "iI",
-                function() require'treesitter_indent_object.textobj'.select_indent_inner(true, 'V') end,
-                mode = {"x", "o"},
-                desc = "Select context-aware indent (inner, entire range) in line-wise visual mode",
-            },
-        },
-    },
     ---------------------------------------------------------------------------
     -- Debuggers
     ---------------------------------------------------------------------------
@@ -142,12 +147,12 @@ return require('lazy').setup({
         "mfussenegger/nvim-dap",
         keys = {
             { "<leader>db", "<cmd> DapToggleBreakpoint <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>di", "<cmd> DapStepInto <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>do", "<cmd> DapStepOver <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>du", "<cmd> DapStepOut <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>dc", "<cmd> DapContinue <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>dt", "<cmd> DapTerminate <CR>", desc = "Toggle Breakpoint" },
-            { "<leader>de", "<cmd> DapToggleRepl <CR>", desc = "Toggle Breakpoint" },
+            { "<leader>di", "<cmd> DapStepInto <CR>",         desc = "Toggle Breakpoint" },
+            { "<leader>do", "<cmd> DapStepOver <CR>",         desc = "Toggle Breakpoint" },
+            { "<leader>du", "<cmd> DapStepOut <CR>",          desc = "Toggle Breakpoint" },
+            { "<leader>dc", "<cmd> DapContinue <CR>",         desc = "Toggle Breakpoint" },
+            { "<leader>dt", "<cmd> DapTerminate <CR>",        desc = "Toggle Breakpoint" },
+            { "<leader>de", "<cmd> DapToggleRepl <CR>",       desc = "Toggle Breakpoint" },
         },
     },
 
@@ -186,5 +191,39 @@ return require('lazy').setup({
             local path = "~/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
             require("dap-python").setup(path)
         end,
+    },
+
+    ---------------------------------------------------------------------------
+    -- Testing
+    ---------------------------------------------------------------------------
+    {
+        "nvim-neotest/neotest",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "antoinemadec/FixCursorHold.nvim",
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-neotest/neotest-python",
+        },
+        config = function(_, opts)
+            local neotest = require("neotest")
+            neotest.setup({
+                adapters = {
+                    require("neotest-python")({
+                        dap = { justMyCode = false },
+                        args = { "--log-level", "DEBUG" },
+                        runner = "pytest",
+                        python = ".venv/bin/python",
+                        pytest_discover_instances = true,
+                    })
+                }
+            })
+        end,
+        keys = {
+            { "<leader>tr", function() require("neotest").run.run() end,                                         desc = "Run nearest test." },
+            { "<leader>tR", function() require("neotest").run.run(vim.fn.expand("%")) end,                       desc = "Run all tests in file." },
+            { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end,                     desc = "Run nearest test in debug mode." },
+            { "<leader>tD", function() require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap" }) end, desc = "Run all tests in file in debug mode." },
+            { "<leader>ta", function() require("neotest").run.attach() end,                                      desc = "Attach to nearest test." },
+        }
     }
 })
