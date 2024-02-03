@@ -38,6 +38,12 @@ return require('lazy').setup({
         'nvim-lualine/lualine.nvim',
         dependencies = { 'nvim-tree/nvim-web-devicons', lazy = true }
     },
+    {
+        "folke/zen-mode.nvim",
+    },
+    {
+        "folke/twilight.nvim",
+    },
 
     ---------------------------------------------------------------------------
     -- Syntax Highlighting
