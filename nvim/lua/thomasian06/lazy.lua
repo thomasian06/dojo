@@ -24,53 +24,29 @@ vim.g.maplocalleader = ' '
 
 return require('lazy').setup({
 
-    {
-        'nvim-telescope/telescope.nvim',
-        branch = '0.1.x',
-        dependencies = { { 'nvim-lua/plenary.nvim' } }
-    },
-
+    ---------------------------------------------------------------------------
+    -- Theme
+    ---------------------------------------------------------------------------
     {
         'rose-pine/neovim',
         name = 'rose-pine',
         config = function(plugin)
-            vim.cmd('colorscheme rose-pine')
+            vim.cmd('colorscheme rose-pine-moon')
         end
     },
-
-    {
-        'nvim-treesitter/nvim-treesitter',
-        build = ':TSUpdate'
-    },
-    'nvim-treesitter/playground',
-    'theprimeagen/harpoon',
-    'mbbill/undotree',
-    'tpope/vim-fugitive',
-    'lewis6991/gitsigns.nvim',
-
     {
         'nvim-lualine/lualine.nvim',
         dependencies = { 'nvim-tree/nvim-web-devicons', lazy = true }
     },
 
+    ---------------------------------------------------------------------------
+    -- Syntax Highlighting
+    ---------------------------------------------------------------------------
     {
-        "christoomey/vim-tmux-navigator",
-        cmd = {
-            "TmuxNavigateLeft",
-            "TmuxNavigateDown",
-            "TmuxNavigateUp",
-            "TmuxNavigateRight",
-            "TmuxNavigatePrevious",
-        },
-        keys = {
-            { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
-            { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
-            { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
-            { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
-            { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
-        },
+        'nvim-treesitter/nvim-treesitter',
+        build = ':TSUpdate'
     },
-
+    'nvim-treesitter/playground',
     {
         "kiyoon/treesitter-indent-object.nvim",
         keys = {
@@ -100,6 +76,49 @@ return require('lazy').setup({
             },
         },
     },
+
+    ---------------------------------------------------------------------------
+    -- Navigation
+    ---------------------------------------------------------------------------
+    {
+        'nvim-telescope/telescope.nvim',
+        branch = '0.1.x',
+        dependencies = { { 'nvim-lua/plenary.nvim' } }
+    },
+    'theprimeagen/harpoon',
+    'mbbill/undotree',
+    {
+        "christoomey/vim-tmux-navigator",
+        cmd = {
+            "TmuxNavigateLeft",
+            "TmuxNavigateDown",
+            "TmuxNavigateUp",
+            "TmuxNavigateRight",
+            "TmuxNavigatePrevious",
+        },
+        keys = {
+            { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+            { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+            { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+            { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
+            { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+        },
+    },
+
+    ---------------------------------------------------------------------------
+    -- Git
+    ---------------------------------------------------------------------------
+    'tpope/vim-fugitive',
+    'lewis6991/gitsigns.nvim',
+    {
+        'theprimeagen/git-worktree.nvim',
+        keys = {
+            { "<leader>gw", function() require('telescope').extensions.git_worktree.git_worktrees() end,       desc = "Toggle git worktrees." },
+            { "<leader>gW", function() require('telescope').extensions.git_worktree.create_git_worktree() end, desc = "Create git worktree." },
+        },
+    },
+
+
 
     ---------------------------------------------------------------------------
     -- Dependency Manager
