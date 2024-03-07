@@ -1,0 +1,223 @@
+[tool.poetry]
+name = "test"
+version = "0.1.0"
+description = "test"
+authors = ["Ian Thomas"]
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+
+# Notebooks
+ipykernel = "^6.23.1"
+
+# Testing
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-mock = "^3.10.0"
+pytest-asyncio = "^0.20.3"
+
+hypothesis = "^6.62.0"
+hypothesis-fspaths = "^0.1"
+
+coverage = "^7.0.5"
+
+# CLI Tools
+pre-commit = "^3.6.0"
+
+# Code Style
+black = "^23.7.0"
+isort = "^5.12.0"
+
+# Linting
+ruff = "^0.1.8"
+
+# Static Type Checking
+mypy = "^1.6.1"
+
+# Stub file packages
+pandas-stubs = "<2.0.0"
+types-regex = "^2023.10.3.0"
+
+# Documentation
+sphinx = "^7.1.1"
+pydata-sphinx-theme = "^0.13.3"
+sphinx-autodoc-typehints = "^1.20.1"
+sphinx-gitstamp = "^0.3.3"
+myst-parser = "^2.0.0"
+autodoc-pydantic = "^2.0.1"
+autodocsumm = "^0.2.11"
+sphinx-autosummary-accessors = "^2023.4.0"
+numpydoc = "^1.5.0"
+
+# TODO: TEMPORARY URLLIB3 FIX UNTIL v2 IS PATCHED
+urllib3 = "<2"
+
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+select = [
+  "F",   # pyflakes
+  "E",   # pycodestyle
+  "N",   # pep8-naming
+  "D",   # pydocstyle
+  "YTT", # flake8-2020
+  "ANN", # flake8-
+  "S",   # flake8-
+  "BLE", # flake8-
+  "FBT", # flake8-
+  "B",   # flake8-
+  "A",   # flake8-
+  "COM", # flake8-
+  "C4",  # flake8-
+  "DTZ", # flake8-
+  "T10", # flake8-
+  "DJ",  # flake8-
+  "EM",  # flake8-
+  "EXE", # flake8-
+  "ISC", # flake8-
+  "ICN", # flake8-
+  "G",   # flake8-
+  "INP", # flake8-
+  "PIE", # flake8-
+  "T20", # flake8-
+  "PYI", # flake8-
+  "PT",  # flake8-
+  "Q",   # flake8-
+  "RSE", # flake8-
+  "RET", # flake8-
+  "SLF", # flake8-
+  "SIM", # flake8-
+  "TID", # flake8-
+  "ARG", # flake8-
+  "PTH", # flake8-
+  "PL",  # pylint
+  "RUF", # ruff
+  "UP",  # pyupgrade: keep this in the pocket for 3.11 type annotations upgrade
+]
+
+ignore = [
+  "PLR0913", # too many arguments to function call
+  "D212",    # Multi-line docstring summary should start at the first line
+  "D203",    # one blank line before class
+  "D416",    # section should with colon
+  "D407",    # missing dashed line under section name
+  "ANN102",  # Missing type annotation for `cls` in classmethod
+  "ANN101",  # Missing type annotation for `self` in method
+  "ANN401",  # Dynamically typed expressions are disallowed
+  "FBT001",  # Boolean positional arg in function definition
+  "FBT002",  # Boolean default value in function definition
+  "FBT003",  # Boolean positional value in function call
+  "PYI041",  # Use `float` instead of `int | float`
+]
+
+[tool.ruff.per-file-ignores]
+"tests/*.py" = [
+  "D417",    # Docstring
+  "S101",    # Use of assert detected
+  "ANN001",  # Missing type annotation for function argument
+  "ANN201",  # Missing return type annotation for public function
+  "PLW2901", # `for` loop variable overwritten by assignment target
+  "DTZ001",  # for timezone in datetime
+]
+"docs/*.py" = [
+  "INP001", # is part of an implicit namespace package
+  "A001",   # Variable `copyright` is shadowing a python builtin
+]
+
+[tool.ruff.pep8-naming]
+classmethod-decorators = [
+  "classmethod",
+  "pydantic.validator",
+  "pydantic.root_validator",
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+include = '\.pyi?$'
+force-exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | .flake8
+  | .gitignore
+  | .gitlab-ci.yml
+  | .pre-commit-config.yaml
+  | poetry.lock
+  | pyproject.toml
+  | README.md
+  | requirements-dev.txt
+  | requirements.txt
+)
+'''
+
+[tool.isort]
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+skip = []
+
+[tool.mypy]
+follow_imports = "normal"
+python_version = "3.11"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+
+exclude = '''
+(
+  poetry.lock
+  | requirements.txt
+  | requirements-dev.txt
+)
+'''
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "NotImplementedError",
+  "if __name__ == .__main__.:",
+  "@(abc\\.)?abstractmethod",
+  "\\.\\.\\.",
+]
+show_missing = true
+ignore_errors = true
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*", "/private/*", "/tmp/*"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
