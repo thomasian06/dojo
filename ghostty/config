@@ -1,0 +1,6 @@
+# Theme
+theme = catppuccin-mocha
+
+# Font
+font-size = 16
+font-family = MesloLGS Nerd Font Mono
