@@ -144,11 +144,54 @@ automatically-unhide-macos-hidden-apps = false
     # you're done to jump straight back to whatever workspace you came from.
     alt-0 = 'workspace 0'
 
-    # Launch-or-focus: switches to the app's workspace and (re)launches/activates it.
-    # 'open -a' is idempotent - if the app is already running it just brings it forward.
-    alt-1 = ['workspace 1', 'exec-and-forget open -a Ghostty']
-    alt-2 = ['workspace 2', 'exec-and-forget open -a "Google Chrome"']
-    alt-3 = ['workspace 3', 'exec-and-forget open -a Slack']
+    # Launch-or-focus: switches to the app's workspace, (re)launches/activates it,
+    # and puts its window into native fullscreen (hides Dock + menu bar). Fullscreen
+    # here never interacts with the split-view toggle below (alt-4 uses disposable
+    # new instances instead of these singleton windows), so it can't be destabilized
+    # by cross-workspace moves the way the split toggle was earlier.
+    alt-1 = '''exec-and-forget bash -c '
+aerospace workspace 1
+IDS=$(aerospace list-windows --workspace 1 --format "%{window-id}" | sort -n)
+KEEP=$(echo "$IDS" | head -1)
+for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
+open -a Ghostty
+for i in $(seq 1 40); do
+  ID=$(aerospace list-windows --workspace 1 --format "%{window-id}" | head -1)
+  [ -n "$ID" ] && break
+  sleep 0.05
+done
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+'
+'''
+    alt-2 = '''exec-and-forget bash -c '
+aerospace workspace 2
+IDS=$(aerospace list-windows --workspace 2 --format "%{window-id}" | sort -n)
+KEEP=$(echo "$IDS" | head -1)
+for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
+open -a "Google Chrome"
+for i in $(seq 1 40); do
+  ID=$(aerospace list-windows --workspace 2 --format "%{window-id}" | head -1)
+  [ -n "$ID" ] && break
+  sleep 0.05
+done
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+'
+'''
+    alt-3 = '''exec-and-forget bash -c '
+aerospace workspace 3
+IDS=$(aerospace list-windows --workspace 3 --format "%{window-id}" | sort -n)
+KEEP=$(echo "$IDS" | head -1)
+for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
+open -a Slack
+for i in $(seq 1 40); do
+  ID=$(aerospace list-windows --workspace 3 --format "%{window-id}" | head -1)
+  [ -n "$ID" ] && break
+  sleep 0.05
+done
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+'
+'''
+
     alt-4 = 'workspace 4'
     alt-5 = 'workspace 5'
     alt-6 = 'workspace 6'
@@ -219,29 +262,6 @@ automatically-unhide-macos-hidden-apps = false
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-shift-semicolon = 'mode service'
 
-    # Toggle Chrome+Ghostty split view (workspace 4, Chrome left / Ghostty right).
-    # Pressing it again sends them back to their normal separate workspaces (2 and 1).
-    # Once split, alt-h/alt-l (already bound above) switch focus between the two.
-    alt-shift-slash = '''exec-and-forget bash -c '
-GHOSTTY=$(aerospace list-windows --app-bundle-id com.mitchellh.ghostty --format "%{window-id}%{tab}%{workspace}" | head -1)
-CHROME=$(aerospace list-windows --app-bundle-id com.google.Chrome --format "%{window-id}%{tab}%{workspace}" | head -1)
-GHOSTTY_ID=$(echo "$GHOSTTY" | cut -f1)
-GHOSTTY_WS=$(echo "$GHOSTTY" | cut -f2)
-CHROME_ID=$(echo "$CHROME" | cut -f1)
-CHROME_WS=$(echo "$CHROME" | cut -f2)
-if [ -z "$GHOSTTY_ID" ] || [ -z "$CHROME_ID" ]; then exit 0; fi
-if [ "$GHOSTTY_WS" = "$CHROME_WS" ]; then
-    aerospace move-node-to-workspace 2 --window-id "$CHROME_ID"
-    aerospace move-node-to-workspace 1 --window-id "$GHOSTTY_ID"
-    aerospace workspace 1
-else
-    aerospace move-node-to-workspace 4 --window-id "$CHROME_ID"
-    aerospace move-node-to-workspace 4 --window-id "$GHOSTTY_ID"
-    aerospace layout --workspace 4 tiles horizontal
-    aerospace workspace 4
-fi
-'
-'''
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
