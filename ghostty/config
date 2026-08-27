@@ -1,11 +1,14 @@
 # Theme
-theme = catppuccin-mocha
+theme = Catppuccin Mocha
 
 # Font
-font-size = 16
+font-size = 22
 font-family = MesloLGS Nerd Font Mono
 
 # Cursor
 cursor-style-blink = false
 shell-integration-features = no-cursor
 cursor-invert-fg-bg = true
+
+# Tabs
+gtk-tabs-location = hidden

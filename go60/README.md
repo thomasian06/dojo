@@ -18,6 +18,22 @@ Both live on the left thumb cluster (`LH_T2` = Shift position, `LH_T3` = Ctrl po
 
 Tap-dance window is 200ms (`tapping-term-ms`).
 
+### Left trackpad scroll inversion
+
+`&cirque_lh_listener`'s input-processor chains append `&zip_scroll_transform (INPUT_TRANSFORM_Y_INVERT)` after the scroll mapper, since macOS is set to natural scrolling and the trackpad's raw scroll direction needed flipping to match.
+
+### Mouse layer (auto-overlay on right trackpad activity)
+
+`layer_Mouse` (`LAYER_Mouse`) is a temporary layer auto-activated by `zip_temp_layer_mouse` (a `zmk,input-processor-temp-layer`) attached to `&cirque_rh_listener`. It activates whenever the right trackpad starts moving (after 300ms of no keypresses) and drops out 1s after the trackpad goes idle. It gives the left hand physical mouse buttons while the right hand drives the cursor - for text selection, drag-and-drop, and clicking without lifting off the trackpad:
+
+- `F` (left home) - left click, held for drag/select
+- `D` - right click
+- `S` - middle click
+- `R` - back (`C_AC_BACK`)
+- `T` - forward (`C_AC_FORWARD`)
+
+Thumbs stay `&trans`, so `td_shift`/`td_ctrl` still work for Shift-click/Ctrl-click while the layer is active.
+
 ## Building firmware
 
 This repo only stores the keymap file, not the full ZMK/Zephyr/Nix build graph.

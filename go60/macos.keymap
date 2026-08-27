@@ -160,6 +160,7 @@
 #define LAYER_SymbolNav 2
 #define LAYER_Magic 3
 #define LAYER_Factory 4
+#define LAYER_Mouse 5
 
 /* To deal with the situation where there is no Lower layer, to keep &lower happy */
 #ifndef LAYER_Lower
@@ -175,6 +176,15 @@
             type = <INPUT_EV_KEY>;
             map = <INPUT_BTN_0 INPUT_BTN_1>;
         };
+
+        // While the right trackpad is moving, temporarily overlay LAYER_Mouse
+        // (left-hand click/back/forward keys) so the right hand can stay on the
+        // trackpad for select/drag while the left hand drives clicks.
+        zip_temp_layer_mouse: zip_temp_layer_mouse {
+            compatible = "zmk,input-processor-temp-layer";
+            #input-processor-cells = <2>;
+            require-prior-idle-ms = <300>;
+        };
     };
 };
 
@@ -183,7 +193,7 @@
 
 /* Input Listeners */
 &cirque_rh_listener {
-    input-processors = <&zip_xy_scaler 3 1>;
+    input-processors = <&zip_xy_scaler 3 1>, <&zip_temp_layer_mouse LAYER_Mouse 1000>;
     layer_SymbolNav {
         layers = <LAYER_SymbolNav>;
         input-processors = <&zip_xy_scaler 9 1>, <&zip_click_to_right_click_mapper>;
@@ -191,10 +201,12 @@
 };
 
 &cirque_lh_listener {
-    input-processors = <&zip_xy_scaler 2 5>, <&zip_xy_to_scroll_mapper>;
+    // Trackpad is set to natural scrolling in macOS; invert here so the physical
+    // gesture direction still matches natural-scrolling convention.
+    input-processors = <&zip_xy_scaler 2 5>, <&zip_xy_to_scroll_mapper>, <&zip_scroll_transform (INPUT_TRANSFORM_Y_INVERT)>;
     layer_SymbolNav {
         layers = <LAYER_SymbolNav>;
-        input-processors = <&zip_xy_scaler 1 1>, <&zip_xy_to_scroll_mapper>, <&zip_click_to_right_click_mapper>;
+        input-processors = <&zip_xy_scaler 1 1>, <&zip_xy_to_scroll_mapper>, <&zip_scroll_transform (INPUT_TRANSFORM_Y_INVERT)>, <&zip_click_to_right_click_mapper>;
     };
     layer_Factory {
         layers = <LAYER_Factory>;
@@ -431,6 +443,21 @@
        &none            &none            &bt_0            &bt_1            &bt_2            &bt_3                                                       &none         &none         &none   &none   &none  &to LAYER_Factory
                                   &out OUT_USB            &none            &none                                                                                      &none         &none   &none
                                                                                                     &none   &none   &none   &none   &none   &none
+            >;
+        };
+
+        // Auto-overlaid on top of whatever layer is active while the right trackpad
+        // is moving (see zip_temp_layer_mouse above). Right hand stays on the
+        // trackpad; left hand gets click/back/forward directly under the resting
+        // fingers so text-select and drag-and-drop are one-handed-trackpad + left click.
+        layer_Mouse {
+            bindings = <
+              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &trans  &trans  &kp C_AC_BACK  &kp C_AC_FORWARD                                                      &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &trans  &mkp MCLK      &mkp RCLK          &mkp LCLK                                                  &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
+                              &trans  &trans  &trans                                                                                       &trans  &trans  &trans
+                                                                     &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
 
