@@ -24,13 +24,15 @@ Tap-dance window is 200ms (`tapping-term-ms`).
 
 ### Mouse layer (auto-overlay on right trackpad activity)
 
-`layer_Mouse` (`LAYER_Mouse`) is a temporary layer auto-activated by `zip_temp_layer_mouse` (a `zmk,input-processor-temp-layer`) attached to `&cirque_rh_listener`. It activates whenever the right trackpad starts moving (after 300ms of no keypresses) and drops out 1s after the trackpad goes idle. It gives the left hand physical mouse buttons while the right hand drives the cursor - for text selection, drag-and-drop, and clicking without lifting off the trackpad:
+`layer_Mouse` (`LAYER_Mouse`) is a temporary layer auto-activated by `zip_temp_layer_mouse` (a `zmk,input-processor-temp-layer`) attached to `&cirque_rh_listener`. It activates whenever the right trackpad starts moving (after 300ms of no keypresses) and drops out 300ms after the trackpad goes idle. It gives the left hand physical mouse buttons while the right hand drives the cursor - for text selection, drag-and-drop, and clicking without lifting off the trackpad:
 
 - `F` (left home) - left click, held for drag/select
 - `D` - right click
 - `S` - middle click
-- `R` - back (`C_AC_BACK`)
-- `T` - forward (`C_AC_FORWARD`)
+- `R` - back (`&mkp MB4`)
+- `T` - forward (`&mkp MB5`)
+
+`excluded-positions` on `zip_temp_layer_mouse` lists these five keys' positions, so holding one of them (e.g. `F` mid-drag) keeps the layer alive even if the trackpad pauses, instead of the 300ms idle timeout dropping the held click.
 
 Thumbs stay `&trans`, so `td_shift`/`td_ctrl` still work for Shift-click/Ctrl-click while the layer is active.
 

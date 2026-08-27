@@ -180,10 +180,15 @@
         // While the right trackpad is moving, temporarily overlay LAYER_Mouse
         // (left-hand click/back/forward keys) so the right hand can stay on the
         // trackpad for select/drag while the left hand drives clicks.
+        // excluded-positions = the layer's own click/back/forward keys (POS_LH_C2R3
+        // LCLK=28, C3R3 RCLK=27, C4R3 MCLK=26, C2R2 BACK=16, C1R2 FORWARD=17) - holding
+        // one of these (e.g. LCLK for a drag) keeps the layer alive even if the trackpad
+        // pauses mid-drag, instead of it timing out and dropping the held click.
         zip_temp_layer_mouse: zip_temp_layer_mouse {
             compatible = "zmk,input-processor-temp-layer";
             #input-processor-cells = <2>;
             require-prior-idle-ms = <300>;
+            excluded-positions = <28 27 26 16 17>;
         };
     };
 };
@@ -193,7 +198,7 @@
 
 /* Input Listeners */
 &cirque_rh_listener {
-    input-processors = <&zip_xy_scaler 3 1>, <&zip_temp_layer_mouse LAYER_Mouse 1000>;
+    input-processors = <&zip_xy_scaler 3 1>, <&zip_temp_layer_mouse LAYER_Mouse 300>;
     layer_SymbolNav {
         layers = <LAYER_SymbolNav>;
         input-processors = <&zip_xy_scaler 9 1>, <&zip_click_to_right_click_mapper>;
@@ -446,21 +451,6 @@
             >;
         };
 
-        // Auto-overlaid on top of whatever layer is active while the right trackpad
-        // is moving (see zip_temp_layer_mouse above). Right hand stays on the
-        // trackpad; left hand gets click/back/forward directly under the resting
-        // fingers so text-select and drag-and-drop are one-handed-trackpad + left click.
-        layer_Mouse {
-            bindings = <
-              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
-              &trans  &trans  &trans  &trans  &kp C_AC_BACK  &kp C_AC_FORWARD                                                      &trans  &trans  &trans  &trans  &trans  &trans
-              &trans  &trans  &trans  &mkp MCLK      &mkp RCLK          &mkp LCLK                                                  &trans  &trans  &trans  &trans  &trans  &trans
-              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
-                              &trans  &trans  &trans                                                                                       &trans  &trans  &trans
-                                                                     &trans  &trans  &trans  &trans  &trans  &trans
-            >;
-        };
-
         layer_Factory {
             bindings = <
  &kp N0  &kp N4  &kp N8  &kp N3  &kp N8  &kp N3                                                  &kp N3  &kp N8  &kp N3  &kp N8  &kp N4  &kp N0
@@ -469,6 +459,21 @@
  &kp N3  &kp N7  &kp N1  &kp N6  &kp N1  &kp N6                                                  &kp N6  &kp N1  &kp N6  &kp N1  &kp N7  &kp N3
                  &kp N2  &kp N7  &kp N2                                                                  &kp N2  &kp N7  &kp N2
                                                  &kp N7  &kp N8  &kp N9  &kp N9  &kp N8  &kp N7
+            >;
+        };
+
+        // Auto-overlaid on top of whatever layer is active while the right trackpad
+        // is moving (see zip_temp_layer_mouse above). Right hand stays on the
+        // trackpad; left hand gets click/back/forward directly under the resting
+        // fingers so text-select and drag-and-drop are one-handed-trackpad + left click.
+        layer_Mouse {
+            bindings = <
+              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &trans  &trans  &mkp MB4  &mkp MB5                                                      &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &mkp MCLK  &mkp RCLK      &mkp LCLK          &trans                                                  &trans  &trans  &trans  &trans  &trans  &trans
+              &trans  &trans  &trans  &trans        &trans           &trans                                                       &trans  &trans  &trans  &trans  &trans  &trans
+                              &trans  &trans  &trans                                                                                       &trans  &trans  &trans
+                                                                     &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
 
