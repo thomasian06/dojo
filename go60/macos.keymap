@@ -341,7 +341,25 @@
 
 /* Custom Defined Behaviors */
 / {
+    behaviors {
+        // Left thumb Ctrl: tap = normal Ctrl (held, for chords), double-tap = tmux prefix (Ctrl+b)
+        td_ctrl: td_ctrl {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_CTRL";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&kp LCTRL>, <&kp LC(B)>;
+        };
 
+        // Left thumb Shift: tap = normal Shift (held), double-tap = sticky Alt (applies to next keypress only)
+        td_shift: td_shift {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_SHIFT";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&kp LSHFT>, <&sk LALT>;
+        };
+    };
 };
 
 /* Automatically generated macro definitions */
@@ -379,7 +397,7 @@
               &kp ESC   &kp A      &kp S    &kp D     &kp F   &kp G                                                                                 &kp H    &kp J      &kp K     &kp L  &kp SEMI           &kp SQT
  &magic LAYER_Magic 0   &kp Z      &kp X    &kp C     &kp V   &kp B                                                                                 &kp N    &kp M  &kp COMMA   &kp DOT  &kp FSLH  &td_LAYER_Keypad
                                &kp GRAVE  &kp DEL  &kp LALT                                                                                                &kp ESC   &kp LBKT  &kp RBKT
-                                                                     &kp SPACE  &kp LSHFT  &kp LCTRL  &mt LGUI RET  &td_LAYER_SymbolNav  &kp BSPC
+                                                                     &kp SPACE  &td_shift  &td_ctrl  &mt LGUI RET  &td_LAYER_SymbolNav  &kp BSPC
             >;
         };
 
