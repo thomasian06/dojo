@@ -14,7 +14,8 @@ after-startup-command = []
 # Always route these apps to their dedicated workspace, however they're launched.
 on-window-detected = [
     { if.app-id = 'com.mitchellh.ghostty',      run = 'move-node-to-workspace 1' },
-    { if.app-id = 'com.google.Chrome',          run = 'move-node-to-workspace 2' },
+    # Chrome is intentionally NOT routed here: extra Chrome windows/profiles should
+    # stay wherever they're opened. alt-2 maintains the dedicated Chrome window on ws 2.
     { if.app-id = 'com.tinyspeck.slackmacgap',  run = 'move-node-to-workspace 3' },
 ]
 
@@ -68,7 +69,7 @@ automatically-unhide-macos-hidden-apps = false
     1 = ['secondary', 'main']   # Ghostty  -> external when docked
     2 = ['secondary', 'main']   # Chrome   -> external when docked
     3 = ['built-in', 'main']    # Slack    -> laptop screen when docked
-    4 = ['secondary', 'main']   # Split view (Chrome | Ghostty) -> external when docked
+    4 = ['built-in', 'main']    # Chrome #2 -> laptop screen when docked (same as Slack)
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -168,7 +169,13 @@ aerospace workspace 2
 IDS=$(aerospace list-windows --workspace 2 --format "%{window-id}" | sort -n)
 KEEP=$(echo "$IDS" | head -1)
 for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
-open -a "Google Chrome"
+if [ -z "$KEEP" ]; then
+  if pgrep -xq "Google Chrome"; then
+    osascript -e "tell application \"Google Chrome\" to make new window" -e "tell application \"Google Chrome\" to activate"
+  else
+    open -a "Google Chrome"
+  fi
+fi
 for i in $(seq 1 40); do
   ID=$(aerospace list-windows --workspace 2 --format "%{window-id}" | head -1)
   [ -n "$ID" ] && break
@@ -192,7 +199,26 @@ done
 '
 '''
 
-    alt-4 = 'workspace 4'
+    alt-4 = '''exec-and-forget bash -c '
+aerospace workspace 4
+IDS=$(aerospace list-windows --workspace 4 --format "%{window-id}" | sort -n)
+KEEP=$(echo "$IDS" | head -1)
+for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
+if [ -z "$KEEP" ]; then
+  if pgrep -xq "Google Chrome"; then
+    osascript -e "tell application \"Google Chrome\" to make new window" -e "tell application \"Google Chrome\" to activate"
+  else
+    open -a "Google Chrome"
+  fi
+fi
+for i in $(seq 1 40); do
+  ID=$(aerospace list-windows --workspace 4 --format "%{window-id}" | head -1)
+  [ -n "$ID" ] && break
+  sleep 0.05
+done
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+'
+'''
     alt-5 = 'workspace 5'
     alt-6 = 'workspace 6'
     alt-7 = 'workspace 7'
