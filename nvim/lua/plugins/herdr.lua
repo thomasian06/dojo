@@ -1,5 +1,7 @@
--- herdr-nvim: <leader>aa tree, <leader>ap picker (plugin defaults).
+-- herdr-nvim: <leader>aa tree, <leader>ap picker, <leader>ac connect (plugin defaults).
 -- Uses the local checkout when present, otherwise installs from GitHub.
+-- Nothing connects automatically, except a trusted .herdr-nvim.json in the
+-- working directory (or a parent), e.g. { "profile": "work" }.
 local dev = vim.fn.expand("~/projects/herdr-nvim")
 
 return {
@@ -8,8 +10,24 @@ return {
     dir = vim.uv.fs_stat(dev) and dev or nil,
     event = "VeryLazy",
     opts = {
-      remote = "work.dev",
-      session = "main",
+      profiles = {
+        { name = "work", remote = "work.dev", session = "main" },
+      },
     },
+  },
+  -- Keep buffer tabs to the right of the herdr tree, like the file explorer.
+  {
+    "akinsho/bufferline.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.options = opts.options or {}
+      opts.options.offsets = opts.options.offsets or {}
+      table.insert(opts.options.offsets, {
+        filetype = "herdr",
+        text = "Herdr",
+        highlight = "Directory",
+        text_align = "left",
+      })
+    end,
   },
 }
