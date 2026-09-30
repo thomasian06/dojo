@@ -146,10 +146,12 @@ automatically-unhide-macos-hidden-apps = false
     alt-0 = 'workspace 0'
 
     # Launch-or-focus: switches to the app's workspace, (re)launches/activates it,
-    # and puts its window into native fullscreen (hides Dock + menu bar). Fullscreen
-    # here never interacts with the split-view toggle below (alt-4 uses disposable
-    # new instances instead of these singleton windows), so it can't be destabilized
-    # by cross-workspace moves the way the split toggle was earlier.
+    # and puts its window into AeroSpace's own fullscreen. macOS native fullscreen is
+    # deliberately avoided: it moves windows into separate macOS Spaces, which
+    # AeroSpace can't see into or move windows out of. Dock + menu bar are hidden
+    # via macOS auto-hide settings instead.
+    # alt-2 / alt-4 are both Chrome singletons; a missing window is created and then
+    # explicitly moved to its workspace, so it can't land on the wrong monitor.
     alt-1 = '''exec-and-forget bash -c '
 aerospace workspace 1
 IDS=$(aerospace list-windows --workspace 1 --format "%{window-id}" | sort -n)
@@ -161,7 +163,7 @@ for i in $(seq 1 40); do
   [ -n "$ID" ] && break
   sleep 0.05
 done
-[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace fullscreen on --window-id "$ID" --no-outer-gaps
 '
 '''
     alt-2 = '''exec-and-forget bash -c '
@@ -170,18 +172,26 @@ IDS=$(aerospace list-windows --workspace 2 --format "%{window-id}" | sort -n)
 KEEP=$(echo "$IDS" | head -1)
 for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
 if [ -z "$KEEP" ]; then
+  CHROME_IDS="aerospace list-windows --monitor all --app-bundle-id com.google.Chrome --format %{window-id}"
+  BEFORE=$($CHROME_IDS | sort)
   if pgrep -xq "Google Chrome"; then
-    osascript -e "tell application \"Google Chrome\" to make new window" -e "tell application \"Google Chrome\" to activate"
+    osascript -e "tell application \"Google Chrome\" to make new window" >/dev/null
   else
     open -a "Google Chrome"
   fi
+  for i in $(seq 1 60); do
+    NEW=$($CHROME_IDS | sort | comm -13 <(echo "$BEFORE") - | head -1)
+    [ -n "$NEW" ] && break
+    sleep 0.05
+  done
+  [ -n "$NEW" ] && aerospace move-node-to-workspace --window-id "$NEW" 2
 fi
 for i in $(seq 1 40); do
   ID=$(aerospace list-windows --workspace 2 --format "%{window-id}" | head -1)
   [ -n "$ID" ] && break
   sleep 0.05
 done
-[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace fullscreen on --window-id "$ID" --no-outer-gaps
 '
 '''
     alt-3 = '''exec-and-forget bash -c '
@@ -195,7 +205,7 @@ for i in $(seq 1 40); do
   [ -n "$ID" ] && break
   sleep 0.05
 done
-[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace fullscreen on --window-id "$ID" --no-outer-gaps
 '
 '''
 
@@ -205,18 +215,26 @@ IDS=$(aerospace list-windows --workspace 4 --format "%{window-id}" | sort -n)
 KEEP=$(echo "$IDS" | head -1)
 for id in $IDS; do [ "$id" != "$KEEP" ] && aerospace close --window-id "$id"; done
 if [ -z "$KEEP" ]; then
+  CHROME_IDS="aerospace list-windows --monitor all --app-bundle-id com.google.Chrome --format %{window-id}"
+  BEFORE=$($CHROME_IDS | sort)
   if pgrep -xq "Google Chrome"; then
-    osascript -e "tell application \"Google Chrome\" to make new window" -e "tell application \"Google Chrome\" to activate"
+    osascript -e "tell application \"Google Chrome\" to make new window" >/dev/null
   else
     open -a "Google Chrome"
   fi
+  for i in $(seq 1 60); do
+    NEW=$($CHROME_IDS | sort | comm -13 <(echo "$BEFORE") - | head -1)
+    [ -n "$NEW" ] && break
+    sleep 0.05
+  done
+  [ -n "$NEW" ] && aerospace move-node-to-workspace --window-id "$NEW" 4
 fi
 for i in $(seq 1 40); do
   ID=$(aerospace list-windows --workspace 4 --format "%{window-id}" | head -1)
   [ -n "$ID" ] && break
   sleep 0.05
 done
-[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace macos-native-fullscreen on
+[ -n "$ID" ] && aerospace focus --window-id "$ID" && aerospace fullscreen on --window-id "$ID" --no-outer-gaps
 '
 '''
     alt-5 = 'workspace 5'
