@@ -10,17 +10,11 @@
 # Brew Installs
 # brew install tmux
 # brew install lazygit
+# brew install herdr
 
 # Install Neovim
-# mkdir $HOME/Downloads/setups/neovim
-# cd $HOME/Downloads/setups/neovim
-# curl -LO https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-macos-arm64.tar.gz
-# xattr -c ./nvim-macos-arm64.tar.gz
-# tar -xzvf nvim-macos-arm64.tar.gz
-# cd ./nvim-macos-arm64
-# rsync -a bin ~/.local/
-# rsync -a lib ~/.local/
-# rsync -a share ~/.local/
+# tree-sitter-cli builds parsers for nvim-treesitter's main branch (used by LazyVim)
+# brew install neovim tree-sitter-cli
 
 # Install Tmux Plugin Manager
 # git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
