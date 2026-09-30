@@ -1,20 +1,15 @@
+-- herdr-nvim: <leader>aa tree, <leader>ap picker (plugin defaults).
+-- Uses the local checkout when present, otherwise installs from GitHub.
+local dev = vim.fn.expand("~/projects/herdr-nvim")
+
 return {
   {
-    dir = "~/projects/herdr.nvim",
-    name = "herdr.nvim",
-    cmd = "Herdr",
-    keys = {
-      { "<leader>aa", "<cmd>Herdr toggle<cr>", desc = "Herdr tree" },
-      { "<leader>ap", "<cmd>Herdr pick<cr>", desc = "Herdr pick pane" },
-    },
+    "thomasian06/herdr-nvim",
+    dir = vim.uv.fs_stat(dev) and dev or nil,
+    event = "VeryLazy",
     opts = {
       remote = "work.dev",
       session = "main",
     },
-  },
-  {
-    "folke/which-key.nvim",
-    optional = true,
-    opts = { spec = { { "<leader>a", group = "agents (herdr)" } } },
   },
 }
