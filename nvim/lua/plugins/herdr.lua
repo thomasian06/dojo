@@ -4,7 +4,7 @@ return {
     name = "herdr.nvim",
     cmd = "Herdr",
     keys = {
-      { "<leader>aa", "<cmd>Herdr sidebar<cr>", desc = "Herdr sidebar" },
+      { "<leader>aa", "<cmd>Herdr toggle<cr>", desc = "Herdr tree" },
       { "<leader>ap", "<cmd>Herdr pick<cr>", desc = "Herdr pick pane" },
     },
     opts = {
