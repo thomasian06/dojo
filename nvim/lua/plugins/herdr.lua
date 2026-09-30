@@ -11,7 +11,7 @@ return {
     event = "VeryLazy",
     opts = {
       profiles = {
-        { name = "work", remote = "work.dev", session = "main" },
+        { name = "work", remote = "work.dev", session = "main", projects_dir = "~/projects" },
       },
     },
   },
