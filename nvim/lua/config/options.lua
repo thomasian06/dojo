@@ -15,3 +15,7 @@ vim.g.lazyvim_python_lsp = "basedpyright"
 
 -- Neovim Virtual Environment
 vim.g.python3_host_prog = vim.fn.expand("~/.config/nvim/neovim-py/bin/python3")
+
+-- Project-local config: run a trusted .nvim.lua from the working directory (and
+-- its parents). Neovim asks before trusting a new or changed file (:trust).
+vim.o.exrc = true

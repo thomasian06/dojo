@@ -1,7 +1,7 @@
 -- herdr-nvim: <leader>aa tree, <leader>ap picker, <leader>ac connect (plugin defaults).
 -- Uses the local checkout when present, otherwise installs from GitHub.
--- Nothing connects automatically, except a trusted .herdr-nvim.json in the
--- working directory (or a parent), e.g. { "profile": "work" }.
+-- Nothing connects automatically, except a project's trusted .nvim.lua
+-- setting vim.g.herdr_connection (e.g. ~/dev/.nvim.lua: "work").
 local dev = vim.fn.expand("~/projects/herdr-nvim")
 
 return {
