@@ -1,9 +1,17 @@
 # Utilities
-abbr -U --quiet crc="code ~/.zshrc"
+abbr add -f --quieter crc="code ~/.zshrc"
 
 # Git/Commitizen
-abbr -U --quiet czc="git add -u; cz c"
+abbr add -f --quieter czc="git add -u; cz c"
+abbr add -f --quieter gcm='git checkout $(git commit-tree $(git hash-object -t tree /dev/null) < /dev/null) && git worktree add main main'
 
 # Pre-Commit
-abbr -U --quiet pcr="pre-commit run --all-files"
-abbr -U --quiet pcu="pre-commit autoupdate"
+abbr add -f --quieter pcr="pre-commit run --all-files"
+abbr add -f --quieter pcu="pre-commit autoupdate"
+
+# Python Venv
+abbr add -f --quieter pshell="source .venv/bin/activate"
+
+# cd->zoxide: skip under Claude Code so agent shells keep a vanilla `cd`
+[[ -z "$CLAUDECODE" ]] && alias cd=z
+

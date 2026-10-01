@@ -1,35 +1,17 @@
-FROM ubuntu:latest
+# An Ubuntu container set up with this repo (shell, Neovim, tmux), via
+# setup-shell-debian.bash:
+#   docker build -f shell/setup-shell-ubuntu.Dockerfile -t dojo .
+#   docker run -it dojo
+FROM ubuntu:24.04
 
 ENV USER=thomasian06
 ENV DEBIAN_FRONTEND=noninteractive
 
-# User configuration
-RUN apt update
-RUN apt install git zsh curl sudo -y
-RUN useradd -ms /bin/zsh ${USER}
-RUN passwd -d ${USER}
-RUN usermod -aG sudo ${USER}
+RUN apt-get update && apt-get install -y -qq git sudo ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN useradd -ms /bin/bash ${USER} && passwd -d ${USER} && usermod -aG sudo ${USER}
 USER ${USER}
-
-# Terminal Configuration
 WORKDIR /home/${USER}
-RUN mkdir .fonts
-WORKDIR /home/${USER}/.fonts
-RUN curl https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf && \
-    curl https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf && \
-    curl https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf && \
-    curl https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 
-WORKDIR /home/${USER}
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-RUN git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-RUN git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-RUN git clone --depth 1 https://github.com/olets/zsh-abbr.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-abbr
-RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-RUN ~/.fzf/install
-
-RUN git clone https://github.com/thomasian06/dojo.git /home/${USER}/.dojo
-WORKDIR /home/${USER}/.dojo/shell
-RUN cp .p10k.zsh .zprofile .zsh_aliases .zshrc /home/${USER}/
-WORKDIR /home/${USER}
+COPY --chown=${USER} . /home/${USER}/projects/dojo
+RUN /home/${USER}/projects/dojo/shell/setup-shell-debian.bash
+CMD ["zsh", "-l"]

@@ -98,15 +98,16 @@ source $ZSH/oh-my-zsh.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 source ~/.zprofile
 
-# Aliases
-source /opt/homebrew/share/zsh-abbr/zsh-abbr.zsh
+# Aliases (zsh-abbr abbreviations). Machine-specific ones go in ~/.zsh_aliases_private.
+[ -r $ZSH/custom/plugins/zsh-abbr/zsh-abbr.zsh ] && source $ZSH/custom/plugins/zsh-abbr/zsh-abbr.zsh
 [ -f ~/.zsh_aliases ] && source ~/.zsh_aliases
+[ -f ~/.zsh_aliases_private ] && source ~/.zsh_aliases_private
 
-# load any environment variables to ~/.zshenv_private so they don't get overwritten by pulls
-[ -f ~/.zshenv_private ] && source ~/.zshenv_private 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # To customize prompt, run `p10k configure` or edit $HOME/.p10k.zsh.
 [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
